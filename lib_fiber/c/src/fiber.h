@@ -3,6 +3,7 @@
 
 #include "common/ring.h"
 #include "event.h"
+#include <sys/types.h>
 
 /*
 #ifdef ANDROID
@@ -18,6 +19,13 @@ typedef struct {
 	void (*free_fn)(void *);
 } FIBER_LOCAL;
 
+
+void fiber_run_odin_func(void(*func)(ACL_FIBER* fb,void* data),ACL_FIBER* fb,void* data);
+typedef struct Mailer {
+    void* task_queue;
+    pid_t id;
+}
+Mailer;
 typedef struct FIBER_BASE {
 #define	FBASE_F_BASE	(1 << 0)
 #define FBASE_F_FIBER	(1 << 1)
@@ -46,7 +54,7 @@ struct ACL_FIBER {
 	unsigned short wstatus;	// The fiber's waiting status as FIBER_WAIT_XXX.
 	unsigned int   oflag;	// The flags for creating fiber.
 	unsigned int   flag;	// The flags for the fiber's running status.
-
+	int            typ;
 #define	FIBER_F_STARTED		(unsigned) (1 << 0)
 #define	FIBER_F_SAVE_ERRNO	(unsigned) (1 << 1)
 #define	FIBER_F_KILLED		(unsigned) (1 << 2)

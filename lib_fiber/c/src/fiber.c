@@ -34,6 +34,7 @@ typedef struct THREAD {
 	size_t     switched;
 	size_t     switched_old;
 	int        nlocal;
+	Mailer*  mailer;
 
 #ifdef	SHARE_STACK
 # ifdef	USE_VALGRIND
@@ -65,6 +66,16 @@ int acl_fiber_scheduled(void)
 	return __scheduled;
 }
 
+
+ void fiber_set_mailer(Mailer* mailer) {
+    
+    __thread_fiber->mailer=mailer;
+}
+ Mailer* fiber_get_mailer() {
+    if (__thread_fiber->mailer != NULL)
+        return __thread_fiber->mailer;
+    return NULL;
+}
 static void thread_free(void *ctx)
 {
 	THREAD *tf = (THREAD *) ctx;
@@ -611,8 +622,7 @@ void fiber_start(ACL_FIBER *fiber, void (*fn)(ACL_FIBER *, void *), void *arg)
 {
 	int i;
 
-	fn(fiber, arg);
-
+	fiber_run_odin_func(fn,fiber,arg);
 	for (i = 0; i < fiber->nlocal; i++) {
 		if (fiber->locals[i] == NULL) {
 			continue;
