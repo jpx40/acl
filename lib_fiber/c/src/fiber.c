@@ -74,7 +74,7 @@ int acl_fiber_scheduled(void)
 }
  Mailer* fiber_get_mailer() {
     if (__mailer != NULL)
-        return __thread_fiber->mailer;
+        return __mailer;
     return NULL;
 }
 static void thread_free(void *ctx)
@@ -744,7 +744,7 @@ ACL_FIBER *acl_fiber_create2(const ACL_FIBER_ATTR *attr,
 	void (*fn)(ACL_FIBER *, void *), void *arg)
 {
 	ACL_FIBER *fiber = fiber_alloc(fn, arg, attr);
-	fiber4->errstring = "";
+	fiber->errstring = "";
 	fiber->typ = 0;
 	if (__thread_fiber->slot >= __thread_fiber->size) {
 		__thread_fiber->size  += 128;

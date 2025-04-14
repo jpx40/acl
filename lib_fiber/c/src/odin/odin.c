@@ -6,7 +6,7 @@
 #include "memory.h"
 
 
-static __thread   void(*cleanup_thread )() =NULL;
+// static __thread   void(*cleanup_thread )() =NULL;
 
 static  void(*odin_func )(void(*)(ACL_FIBER* fb,void* data),ACL_FIBER* fb,void* data) =NULL;
 
@@ -26,8 +26,13 @@ static void fiber_set_odin_func( void(*func )(void(*)(ACL_FIBER* fb,void* data),
 
 
 }
-
-
+static ACL_FIBER *acl_fiber_create4(void (*fn)(ACL_FIBER *, void *),
+	void *arg, size_t size,int typ) {
+	
+	  ACL_FIBER *fb=  acl_fiber_create(fn,arg,size);
+		fb->typ = typ;
+	return fb;
+	}
 static void fiber_set_error_string(ACL_FIBER* fb,char * err) {
     fb->errstring = err;
     
