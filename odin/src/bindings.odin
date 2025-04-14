@@ -101,14 +101,14 @@ acl_fiber_set_errno :: proc( fiber : ^Fiber,  errnum: c.int) ---
  * @param fiber {ACL_FIBER*} the specified fiber, if NULL the current running
  * @return {int} get the error number of associated fiber
  */
-FIBER_API int acl_fiber_errno(ACL_FIBER *fiber);
+ acl_fiber_errno :: proc(fiber: ^Fiber)-> c.int ---
 
 /**
  * @deprecated
  * @param fiber {ACL_FIBER*}
  * @param yesno {int}
  */
-FIBER_API void acl_fiber_keep_errno(ACL_FIBER *fiber, int yesno);
+acl_fiber_keep_errno :: proc(fiber: ^Fiber, yesno: c.int) ---
 
 /**
  * Get the associated fiber's status
@@ -116,40 +116,40 @@ FIBER_API void acl_fiber_keep_errno(ACL_FIBER *fiber, int yesno);
  *  running fiber will be used.
  * @return {int} Return ths status defined as FIBER_STATUS_XXX.
  */
-FIBER_API int acl_fiber_status(const ACL_FIBER *fiber);
+acl_fiber_status :: proc(fiber: ^Fiber) -> c.int ---
 
 /**
  * Get the specified fiber's waiting status, defined as FIBER_WAIT_XXX.
  * @param fiber {ACL_FIBER*} The specified fiber or the running fiber if the
  *  fiber is NULL.
  */
-FIBER_API int acl_fiber_waiting_status(const ACL_FIBER *fiber);
+acl_fiber_waiting_status :: proc(fiber: ^Fiber) -> c.int ---
 
 /**
  * Kill the suspended fiber and notify it to exit in asynchronous mode
  * @param fiber {const ACL_FIBER*} the specified fiber, NOT NULL
  */
-FIBER_API void acl_fiber_kill(ACL_FIBER *fiber);
+acl_fiber_kill :: proc(fiber: ^Fiber) ---
 
 /**
  * Kill the suspended fiber and notify it to exit in synchronous mode
  * @param fiber {const ACL_FIBER*} the specified fiber, NOT NULL
  */
-FIBER_API void acl_fiber_kill_wait(ACL_FIBER *fiber);
+acl_fiber_kill_wait :: proc(fiber: ^Fiber) ---
 
 /**
  * Check if the specified fiber has been killed
  * @param fiber {ACL_FIBER*} the specified fiber, if NULL the current running
  * @return {int} non zero returned if been killed
  */
-FIBER_API int acl_fiber_killed(ACL_FIBER *fiber);
+ acl_fiber_killed :: proc(fiber: ^Fiber) -> c.int ---
 
 /**
  * Check if the specified fiber has been signaled
  * @param fiber {ACL_FIBER*} the specified fiber, if NULL the current running
  * @return {int} non zero returned if been signed
  */
-FIBER_API int acl_fiber_signaled(ACL_FIBER *fiber);
+acl_fiber_signaled :: proc(fiber: ^Fiber) -> c.int ---
 
 /**
  * Check if the specified fiber's socket has been closed by another fiber
@@ -202,12 +202,12 @@ FIBER_API int acl_fiber_signum(ACL_FIBER *fiber);
  * Add the suspended fiber into resuming queue
  * @param fiber {ACL_FIBER*} the fiber, NOT NULL
  */
-FIBER_API void acl_fiber_ready(ACL_FIBER *fiber);
+acl_fiber_ready :: proc(fiber: ^Fiber) ---
 
 /**
  * Suspend the current fiber and switch to run the next ready fiber
  */
-FIBER_API void acl_fiber_switch(void);
+acl_fiber_switch :: proc() ---
 /**
  * Set the fiber schedule process with automatically, in this way, when one
  * fiber was created, the schedule process will start automatically, but only
@@ -215,34 +215,34 @@ FIBER_API void acl_fiber_switch(void);
  * fiber. The default schedule mode is non-automatically, you should call the
  * acl_fiber_schedule or acl_fiber_schedule_with explicit
  */
-FIBER_API void acl_fiber_schedule_init(int on);
+acl_fiber_schedule_init :: proc(on: c.int) ---
 
 /**
  * Start the fiber schedule process, the fibers in the ready quque will be
  * started in sequence.
  */
-FIBER_API void acl_fiber_schedule(void);
+acl_fiber_schedule :: proc() ---
 
 
-FIBER_API void acl_fiber_schedule_with(int event_mode);
+acl_fiber_schedule_with :: proc(event_mode: c.int) ---
 
 /**
  * Set the event type, the default type is FIBER_EVENT_KERNEL, this function
  * must be called before acl_fiber_schedule.
  * @param event_mode {int} the event type, defined as FIBER_EVENT_XXX
  */
-FIBER_API void acl_fiber_schedule_set_event(int event_mode);
+acl_fiber_schedule_set_event :: proc(event_mode: c.int ) ---
 
 /**
  * Check if the current thread is in fiber schedule status
  * @return {int} non zero returned if in fiber schedule status
  */
-FIBER_API int acl_fiber_scheduled(void);
+acl_fiber_scheduled :: proc() -> c.int ---
 
 /**
  * Stop the fiber schedule process, all fibers will be stopped
  */
-FIBER_API void acl_fiber_schedule_stop(void);
+acl_fiber_schedule_stop :: proc() ---
 /**
  * Let the current fiber sleep for a while
  * @param milliseconds {size_t} the milliseconds to sleep
@@ -255,25 +255,25 @@ FIBER_API void acl_fiber_schedule_stop(void);
  * @param seconds {size_t} the seconds to sleep
  * @return {size_t} the rest seconds returned after wakeup
  */
-FIBER_API size_t acl_fiber_sleep(size_t seconds);
+acl_fiber_sleep :: proc(seconds: c.size_t)-> c.size_t
 /**
  * Set the DNS service addr
  * @param ip {const char*} ip of the DNS service
  * @param port {int} port of the DNS service
  */
-FIBER_API void acl_fiber_set_dns(const char *ip, int port);
+ acl_fiber_set_dns :: proc(ip: ctring,port: c.int) ---
 
 /**
  * Get the system error number of last system API calling
  * @return {int} error number
  */
-FIBER_API int acl_fiber_last_error(void);
+ acl_fiber_last_error :: proc() -> c.int ---
 
 /**
  * Get the error information of last system API calling
  * @return {const char*}
  */
-FIBER_API const char *acl_fiber_last_serror(void);
+acl_fiber_last_serror :: proc() -> cstring ---
 
 /**
  * Convert errno to string
@@ -282,18 +282,18 @@ FIBER_API const char *acl_fiber_last_serror(void);
  * @param size {size_t} buf's size
  * @retur {const char*} the addr of buf
  */
-FIBER_API const char *acl_fiber_strerror(int errnum, char *buf, size_t size);
+acl_fiber_strerror :: proc(errnum: c.int, buf: [^]u8, size: c.size_t) -> cstring ---
 
 /**
  * Set the system error number
  * @param errnum {int} the error number
  */
-FIBER_API void acl_fiber_set_error(int errnum);
+acl_fiber_set_error :: proc(errnum: c.int) ---
 
 /**
  * Set the fd limit for the current process
  * @param limit {int} the fd limit to be set
  * @return {int} the real fd limit will be returned
  */
-FIBER_API int acl_fiber_set_fdlimit(int limit);
+acl_fiber_set_fdlimit :: proc(limit: c.int) -> c.int
 }
