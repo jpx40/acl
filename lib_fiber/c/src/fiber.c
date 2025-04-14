@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "fiber/libfiber.h"
 #include "common.h"
-
+#include "./odin/odin.h"
 #ifdef USE_VALGRIND
 #include <valgrind/valgrind.h>
 #endif
@@ -21,6 +21,7 @@ typedef int  *(*errno_fn)(void);
 static errno_fn __sys_errno     = NULL;
 #endif
 
+static __thread Mailer*  __mailer=NULL;
 typedef struct THREAD {
 	RING       ready;		/* ready fiber queue */
 	RING       dead;		/* dead fiber queue */
@@ -34,7 +35,7 @@ typedef struct THREAD {
 	size_t     switched;
 	size_t     switched_old;
 	int        nlocal;
-	Mailer*  mailer;
+	
 
 #ifdef	SHARE_STACK
 # ifdef	USE_VALGRIND
@@ -69,10 +70,10 @@ int acl_fiber_scheduled(void)
 
  void fiber_set_mailer(Mailer* mailer) {
     
-    __thread_fiber->mailer=mailer;
+    __mailer=mailer;
 }
  Mailer* fiber_get_mailer() {
-    if (__thread_fiber->mailer != NULL)
+    if (__mailer != NULL)
         return __thread_fiber->mailer;
     return NULL;
 }
@@ -743,6 +744,7 @@ ACL_FIBER *acl_fiber_create2(const ACL_FIBER_ATTR *attr,
 	void (*fn)(ACL_FIBER *, void *), void *arg)
 {
 	ACL_FIBER *fiber = fiber_alloc(fn, arg, attr);
+	fiber4->errstring = "";
 	fiber->typ = 0;
 	if (__thread_fiber->slot >= __thread_fiber->size) {
 		__thread_fiber->size  += 128;

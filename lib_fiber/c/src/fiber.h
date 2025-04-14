@@ -20,7 +20,6 @@ typedef struct {
 } FIBER_LOCAL;
 
 
-void fiber_run_odin_func(void(*func)(ACL_FIBER* fb,void* data),ACL_FIBER* fb,void* data);
 typedef struct Mailer {
     void* task_queue;
     pid_t id;
@@ -48,13 +47,14 @@ struct ACL_FIBER {
 	unsigned       fid;
 	unsigned       slot;
 	long long      when;
-	int            errnum;	// The fiber's current errno.
+	int            errnum;	// The fiber's current errno.a
+	char           *errstring;
+	int            typ;
 	int            signum;	// The signed number to the fiber.
 	unsigned short status;	// The fiber's status as FIBER_STATUS_XXX.
 	unsigned short wstatus;	// The fiber's waiting status as FIBER_WAIT_XXX.
 	unsigned int   oflag;	// The flags for creating fiber.
 	unsigned int   flag;	// The flags for the fiber's running status.
-	int            typ;
 #define	FIBER_F_STARTED		(unsigned) (1 << 0)
 #define	FIBER_F_SAVE_ERRNO	(unsigned) (1 << 1)
 #define	FIBER_F_KILLED		(unsigned) (1 << 2)
@@ -148,7 +148,7 @@ void fiber_io_clear(void);
 // the return value is same as which is from event_add_read or event_add_write.
 int fiber_wait_read(FILE_EVENT *fe);
 int fiber_wait_write(FILE_EVENT *fe);
-
+void fiber_set_mailer(Mailer*);
 EVENT *fiber_io_event(void);
 void fiber_timer_add(ACL_FIBER *fiber, size_t milliseconds);
 int fiber_timer_del(ACL_FIBER *fiber);

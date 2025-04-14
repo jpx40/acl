@@ -6,10 +6,11 @@
 #include "memory.h"
 
 
+static __thread   void(*cleanup_thread )() =NULL;
 
 static  void(*odin_func )(void(*)(ACL_FIBER* fb,void* data),ACL_FIBER* fb,void* data) =NULL;
 
-
+static  void(*odin_func2 )(void(*)()) =NULL;
 
 static ACL_FIBER *acl_fiber_create3(const ACL_FIBER_ATTR *attr,
 	void (*fn)(ACL_FIBER *, void *), void *arg, int typ) {
@@ -27,11 +28,19 @@ static void fiber_set_odin_func( void(*func )(void(*)(ACL_FIBER* fb,void* data),
 }
 
 
+static void fiber_set_error_string(ACL_FIBER* fb,char * err) {
+    fb->errstring = err;
+    
+}
+static char *fiber_get_error_string(ACL_FIBER* fb) {
+    return fb->errstring;    
+}
+
 typedef struct ThreadCtx {
     pthread_t thrd;
     Mailer* mailer;
     pid_t id;
-    char is_deatached;
+    char is_detached;
 }ThreadCtx;
 
 
@@ -54,7 +63,9 @@ static void *fiber_thread_init_func(void* data) {
           p->init(p->func,NULL);
       }
     } 
-    
+    if(p->mailer != NULL) {
+    fiber_set_mailer(p->mailer);
+}
    if (p->event_mode!= 0) {
        
        acl_fiber_schedule_set_event(p->event_mode);
@@ -87,6 +98,8 @@ static int fiber_win_event_nr() {
 }
 
 
+
+
  void fiber_run_odin_func(void(*func)(ACL_FIBER* fb,void* data),ACL_FIBER* fb,void* data) {
          
         if (odin_func != NULL) {
@@ -96,6 +109,17 @@ static int fiber_win_event_nr() {
         }
         
      }
+     
+void fiber_run_odin_func2(void(*func)()) {
+    if (odin_func2 != NULL) {
+        
+        odin_func2(func);
+        
+    } else {
+        func();
+    }
+     
+}
 static ThreadCtx fiber_create_thread(Mailer* mailer,     void(*init)(  void(*)(ACL_FIBER*, void*) ,void*),    void(*cleanup)(void*),  void(*func)(ACL_FIBER*,void*),  void* data,    pthread_attr_t* attr,int event_mode ,char detach,int* err) {
 
 
@@ -118,7 +142,7 @@ if( attr == NULL) {
     
 }
 if (detach == 1) {
-    ctx.is_deatached = 1;
+    ctx.is_detached = 1;
    *err = pthread_detach(ctx.thrd);
 }
 
