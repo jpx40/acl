@@ -743,7 +743,7 @@ ACL_FIBER *acl_fiber_create2(const ACL_FIBER_ATTR *attr,
 	void (*fn)(ACL_FIBER *, void *), void *arg)
 {
 	ACL_FIBER *fiber = fiber_alloc(fn, arg, attr);
-
+	fiber->typ = 0;
 	if (__thread_fiber->slot >= __thread_fiber->size) {
 		__thread_fiber->size  += 128;
 		__thread_fiber->fibers = (ACL_FIBER **) mem_realloc(
