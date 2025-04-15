@@ -8,6 +8,9 @@ foreign import libfiber "libfiber.a"
 
 socket_t :: distinct i32
 
+mode_t :: distinct u16
+
+
 @(default_calling_convention="c")
 foreign libfiber {
 
@@ -19,36 +22,50 @@ foreign libfiber {
     acl_fiber_accept :: proc(sock: socket_t , addr :^posix.sockaddr, socklen : ^posix.socklen_t ) -> socket_t ---
     acl_fiber_connect :: proc(sock: socket_t , addr: ^posix.sockaddr ,socklen: posix.socklen_t ) -> c.int ---
     acl_fiber_read :: proc(socket_t,buf: [^]u8,count: c.size_t) -> c.ssize_t
-    acl_fiber_readv :: proc(socket: socket_t,iov: posix.iovec,iovcnt: c.int) -> c.ssize_t ---
-    acl_fiber_recvmsg :: proc(socket: socket_t, msg: posix.msghdr, flags:c.int)  -> c.ssize_t---
+    acl_fiber_readv :: proc(socket: socket_t,iov: ^posix.iovec,iovcnt: c.int) -> c.ssize_t ---
+    acl_fiber_recvmsg :: proc(socket: socket_t, msg: ^posix.msghdr, flags:c.int)  -> c.ssize_t---
 
 
     
     
-    FIBER_API ssize_t acl_fiber_write(socket_t, const void* buf, size_t count);
-    FIBER_API ssize_t acl_fiber_writev(socket_t, const struct iovec* iov, int iovcnt);
-    FIBER_API ssize_t acl_fiber_sendmsg(socket_t, const struct msghdr* msg, int flags);
+    acl_fiber_write :: proc(sock: socket_t,buf: [^]u8,count: c.size_t)  -> c.ssize_t ---
+    acl_fiber_writev :: proc(sock: socket_t, iov: ^posix.iovec, iovcnt: c.int )  -> c.ssize_t ---
+     acl_fiber_sendmsg :: proc(sock: socket_t, msg: ^posix.msghdr, flags:c.int)  -> c.ssize_t ---
     
-    FIBER_API ssize_t acl_fiber_recv(socket_t, void* buf, size_t len, int flags);
-    FIBER_API ssize_t acl_fiber_recvfrom(socket_t, void* buf, size_t len, int flags,
-	struct sockaddr* src_addr, socklen_t* addrlen);
+     acl_fiber_recv :: proc(sock: socket_t,buf:[^]u8,  len: c.size_t,  flags: c.int)  -> c.ssize_t ---
+      acl_fiber_recvfrom :: proc(sock: socket_t,buf:[^]u8,  len: c.size_t,  flags: c.int,
+	src_addr: ^posix.sockaddr, addrlen: ^posix.socklen_t)  -> c.ssize_t ---
     
-    FIBER_API ssize_t acl_fiber_send(socket_t, const void* buf, size_t len, int flags);
-    FIBER_API ssize_t acl_fiber_sendto(socket_t, const void* buf, size_t len, int flags,
-	const struct sockaddr* dest_addr, socklen_t addrlen);
+    acl_fiber_send :: proc(sock: socket_t,buf:[^]u8,  len: c.size_t,  flags: c.int) -> c.ssize_t ---
+     acl_fiber_sendto :: proc(sock: socket_t, buf:[^]u8,  len: c.size_t,  flags: c.int,
+    dest_addr : ^posix.sockaddr,  addrlen: posix.socklen_t)  -> c.ssize_t ---
     
-    FIBER_API int acl_fiber_select(int nfds, fd_set *readfds, fd_set *writefds,
-	fd_set *exceptfds, struct timeval *timeout);
-    FIBER_API int acl_fiber_poll(struct pollfd *fds, nfds_t nfds, int timeout);
+ //    FIBER_API int acl_fiber_select :: proc(int nfds, fd_set *readfds, fd_set *writefds,
+	// fd_set *exceptfds, timeout: ^posix.tim) -> c.int ---
+ //    FIBER_API int acl_fiber_poll(struct pollfd *fds, nfds_t nfds, int timeout) -> c.int ---
     
-    FIBER_API struct hostent *acl_fiber_gethostbyname(const char *name);
-    FIBER_API int acl_fiber_gethostbyname_r(const char *name, struct hostent *ent,
-	char *buf, size_t buflen, struct hostent **result, int *h_errnop);
-    FIBER_API int acl_fiber_getaddrinfo(const char *node, const char *service,
-	const struct addrinfo* hints, struct addrinfo **res);
-    FIBER_API void acl_fiber_freeaddrinfo(struct addrinfo *res);
+    acl_fiber_gethostbyname :: proc(name: cstring)-> ^posix.hostent ---
+     acl_fiber_gethostbyname_r:: proc(name: cstring, ent: ^posix.hostent,
+	char *buf, size_t buflen, result: [^]^posix.hostent, int *h_errnop)  -> c.int ---
+    acl_fiber_getaddrinfo::proc(node: cstring, service: cstring,
+	 hints:^posix.addrinfo, res [^]^posix.addrinfo)  -> c.int ---
+    acl_fiber_freeaddrinfo :: proc(res: ^posix.addrinfo) ---
     
-    #endif
     
-    FIBER_API void acl_fiber_set_sysio(socket_t fd);
+acl_fiber_set_sysio :: proc( fd: socket_t) ---
+
+int acl_fiber_open(const char * pathname, int flags, ...)
+    
+  
+
+
+int acl_fiber_openat(int dirfd, const char * pathname, int flags, ...) 
+int acl_fiber_renameat2(int olddirfd, oldpath,
+	int newdirfd, const char *newpath,  flags: c.uint) 
+	acl_fiber_renameat :: prc(olddirfd: c.int,oldpath:cstring,newdirfd:c.int, newpath:cstring)
+    acl_fiber_rename :: proc(oldpath:cstring, newpath: cstring) -> c.int ---
+	 acl_fiber_mkdirat :: proc(dirfd: c.int, pathname: cstring,  mode: mode_t) -> c.int ---
+	acl_fiber_pread :: proc(fd: c.int, buf [^]u8,  count: c.size_t,  offset: c.longlong) -> c.ssize_t  ---
+
+    
 }

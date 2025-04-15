@@ -87,7 +87,7 @@ acl_fiber_number ::proc() -> c.uint ---
  * @return {unsigned int} the current fiber's ID
  */
  @(link_name="acl_fiber_self")
-		fiber_self :: proc() -> c.int ---
+fiber_self :: proc() -> c.int ---
 /**
  * Set the error number to the specified fiber object
  * @param fiber {ACL_FIBER*} the specified fiber, if NULL the current running
@@ -163,34 +163,34 @@ FIBER_API int acl_fiber_closed(ACL_FIBER *fiber);
  * @param fiber {ACL_FIBER*} the specified fiber, if NULL the current running
  * @return {int} non zero returned if been canceled
  */
-FIBER_API int acl_fiber_canceled(ACL_FIBER *fiber);
+acl_fiber_canceled :: proc(fiber: ^Fiber) -> c.int ---
 
 /**
  * Clear the fiber's flag and errnum to 0.
  * @param fiber {ACL_FIBER*}
  */
-FIBER_API void acl_fiber_clear(ACL_FIBER *fiber);
+ acl_fiber_clear :: proc(fiber: ACL_FIBER) ---
 
 /**
  * Wakeup the suspended fiber with the associated signal number asynchronously
  * @param fiber {const ACL_FIBER*} the specified fiber, NOT NULL
  * @param signum {int} SIGINT, SIGKILL, SIGTERM ... refer to bits/signum.h
  */
-FIBER_API void acl_fiber_signal(ACL_FIBER *fiber, int signum);
+ acl_fiber_signal :: proc(fiber: ^Fiber, signum: c.int) ---
 
 /**
  * Wakeup the suspended fiber with the associated signal number synchronously
  * @param fiber {const ACL_FIBER*} the specified fiber, NOT NULL
  * @param signum {int} SIGINT, SIGKILL, SIGTERM ... refer to bits/signum.h
  */
-FIBER_API void acl_fiber_signal_wait(ACL_FIBER *fiber, int signum);
+ acl_fiber_signal_wait :: proc(fiber: ^Fiber,signum :c.int) ---
 
 /**
  * Get the signal number got from other fiber
  * @param fiber {ACL_FIBER*} the specified fiber, if NULL the current running
  * @retur {int} the signal number got
  */
-FIBER_API int acl_fiber_signum(ACL_FIBER *fiber);
+ acl_fiber_signum :: proc(fiber: ^Fiber) -> c.int
 
 /**
  * Suspend the current running fiber

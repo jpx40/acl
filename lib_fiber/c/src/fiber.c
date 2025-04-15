@@ -451,6 +451,7 @@ void acl_fiber_clear(ACL_FIBER *fiber)
 	if (fiber) {
 		fiber->errnum = 0;
 		fiber->flag &= ~FIBER_F_CANCELED;
+		fiber->errstring = "";
 	}
 }
 

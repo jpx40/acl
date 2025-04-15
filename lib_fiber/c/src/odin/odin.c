@@ -1,4 +1,5 @@
 #include "fiber.h"
+#include <_abort.h>
 #include <pthread.h>
 #include <sys/types.h>
 
@@ -6,7 +7,7 @@
 #include "memory.h"
 
 
-// static __thread   void(*cleanup_thread )() =NULL;
+ static __thread   void(*cleanup_thread )() =NULL;
 
 static  void(*odin_func )(void(*)(ACL_FIBER* fb,void* data),ACL_FIBER* fb,void* data) =NULL;
 
@@ -18,6 +19,17 @@ ACL_FIBER* fb =	acl_fiber_create2(attr,fn,arg);
 	fb->typ = typ;
 	return fb;
 	}
+	
+static pthread_once_t __once_control = PTHREAD_ONCE_INIT;
+	
+static void acl_fiber_init_odin(void(*init_func)(void)) {
+    if (pthread_once(&__once_control,init_func) != 0) {
+        
+        abort();
+    }
+    
+    
+}
 static void fiber_set_odin_func( void(*func )(void(*)(ACL_FIBER* fb,void* data),ACL_FIBER* fb,void* data) ) {
     if (odin_func != NULL) {
 
