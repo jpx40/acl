@@ -1,6 +1,6 @@
 #include "fiber.h"
-#include <_abort.h>
 #include <pthread.h>
+#include <stdlib.h>
 #include <sys/types.h>
 
 #include "event.h"
@@ -88,10 +88,11 @@ static void *fiber_thread_init_func(void* data) {
        acl_fiber_schedule_set_event(p->event_mode);
    } 
    acl_fiber_schedule(); 
-   if (p->cleanup!=NULL) {
+   // if (p->cleanup!=NULL) {
        
-       p->cleanup(p);
-   }
+   //     p->cleanup(p);
+   // }
+   cleanup_thread = p->cleanup;
     if (p != NULL) {
         mem_free(p);
     }

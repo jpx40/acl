@@ -34,7 +34,6 @@ foreign libfiber {
 
 
 	
-		acl_fiber_create3 :: proc(attr: ^Attr,func: FiberFunc, data: rawptr, typ: c.int) -> ^Fiber ---
 			
 		acl_fiber_attr_init :: proc(attr: ^Attr) ---
 		acl_fiber_attr_setstacksize :: proc(attr: ^Attr,  size: c.size_t) --- 
@@ -59,7 +58,7 @@ acl_fiber_number ::proc() -> c.uint ---
  * maximum fibers in every recycling process
  * @param max {size_t} the maximum fibers to freed in every recycling process
  */
- acl_fiber_check_timer :: proc( max : c.size_t);
+ acl_fiber_check_timer :: proc( max : c.size_t) ---
 
 /**
  * Get the current running fiber
@@ -156,7 +155,7 @@ acl_fiber_signaled :: proc(fiber: ^Fiber) -> c.int ---
  * @param fiber {ACL_FIBER*} the specified fiber, if NULL the current running
  * @return {int} non zero returned if been closed
  */
-FIBER_API int acl_fiber_closed(ACL_FIBER *fiber);
+ acl_fiber_closed ::proc(fiber: ^Fiber) -> c.int ---
 
 /**
  * Check if the specified fiber has been canceled
@@ -169,7 +168,7 @@ acl_fiber_canceled :: proc(fiber: ^Fiber) -> c.int ---
  * Clear the fiber's flag and errnum to 0.
  * @param fiber {ACL_FIBER*}
  */
- acl_fiber_clear :: proc(fiber: ACL_FIBER) ---
+ acl_fiber_clear :: proc(fiber: ^Fiber) ---
 
 /**
  * Wakeup the suspended fiber with the associated signal number asynchronously
@@ -190,7 +189,7 @@ acl_fiber_canceled :: proc(fiber: ^Fiber) -> c.int ---
  * @param fiber {ACL_FIBER*} the specified fiber, if NULL the current running
  * @retur {int} the signal number got
  */
- acl_fiber_signum :: proc(fiber: ^Fiber) -> c.int
+ acl_fiber_signum :: proc(fiber: ^Fiber) -> c.int ---
 
 /**
  * Suspend the current running fiber
@@ -215,13 +214,17 @@ acl_fiber_switch :: proc() ---
  * fiber. The default schedule mode is non-automatically, you should call the
  * acl_fiber_schedule or acl_fiber_schedule_with explicit
  */
-acl_fiber_schedule_init :: proc(on: c.int) ---
+ 
+ @(link_name="acl_fiber_schedule_init")
+schedule_init :: proc(on: c.int) ---
 
 /**
  * Start the fiber schedule process, the fibers in the ready quque will be
  * started in sequence.
  */
-acl_fiber_schedule :: proc() ---
+ 
+ @(link_name="acl_fiber_schedule")
+schedule :: proc() ---
 
 
 acl_fiber_schedule_with :: proc(event_mode: c.int) ---
@@ -255,13 +258,13 @@ acl_fiber_schedule_stop :: proc() ---
  * @param seconds {size_t} the seconds to sleep
  * @return {size_t} the rest seconds returned after wakeup
  */
-acl_fiber_sleep :: proc(seconds: c.size_t)-> c.size_t
+acl_fiber_sleep :: proc(seconds: c.size_t)-> c.size_t ---
 /**
  * Set the DNS service addr
  * @param ip {const char*} ip of the DNS service
  * @param port {int} port of the DNS service
  */
- acl_fiber_set_dns :: proc(ip: ctring,port: c.int) ---
+ acl_fiber_set_dns :: proc(ip: cstring,port: c.int) ---
 
 /**
  * Get the system error number of last system API calling
@@ -295,5 +298,5 @@ acl_fiber_set_error :: proc(errnum: c.int) ---
  * @param limit {int} the fd limit to be set
  * @return {int} the real fd limit will be returned
  */
-acl_fiber_set_fdlimit :: proc(limit: c.int) -> c.int
+acl_fiber_set_fdlimit :: proc(limit: c.int) -> c.int ---
 }
