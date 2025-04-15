@@ -42,6 +42,8 @@ foreign libfiber {
     
  fiber_set_odin_func :: proc( odin_func_t ) ---
 acl_fiber_create4 :: proc(func:FiberFunc, arg: rawptr, size: c.size_t,typ: c.int) -> ^Fiber ---
+acl_fiber_create2 :: proc(attr: ^Attr,func: proc "c" (fb: ^Fiber,data: rawptr), arg: rawptr) -> ^Fiber ---
+acl_fiber_create :: proc(func: proc "c" (fb: ^Fiber,data: rawptr), arg: rawptr, size: c.size_t) -> ^Fiber ---
 
 acl_fiber_create3 :: proc(func:FiberFunc, arg: rawptr, typ: c.int) -> ^Fiber ---
  fiber_set_error_string :: proc(fb:^Fiber,err: cstring) ---
