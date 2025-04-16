@@ -157,3 +157,5 @@ android/acl/gradle
 .vscode
 
 cmake-build-debug
+test.bin.dSYM
+test.bin
