@@ -34,13 +34,21 @@ foreign libfiber {
 
 
 	
-			
-		acl_fiber_attr_init :: proc(attr: ^Attr) ---
+		@(link_name="acl_fiber_attr_init")
+		attr_init :: proc(attr: ^Attr) ---
 		acl_fiber_attr_setstacksize :: proc(attr: ^Attr,  size: c.size_t) --- 
-		acl_fiber_attr_setsharestack :: proc(attr: ^Attr,  on: c.int) ---
-		acl_fiber_set_non_blocking :: proc( on: c.int) ---
-		acl_fiber_set_shared_stack_size :: proc( size:c.size_t) ---
-		acl_fiber_get_shared_stack_size :: proc() -> c.size_t ---
+		
+		@(link_name="acl_fiber_attr_setsharestack")
+		attr_setsharestack :: proc(attr: ^Attr,  on: c.int) ---
+		
+		@(link_name="acl_fiber_set_non_blocking")
+		set_non_blocking :: proc( on: c.int) ---
+		
+		@(link_name="acl_fiber_set_shared_stack_size")
+		set_shared_stack_size :: proc( size:c.size_t) ---
+		
+		@(link_name="acl_fiber_get_shared_stack_size")
+		get_shared_stack_size :: proc() -> c.size_t ---
 		/**
  * Get the fibers count in deading status
  * @return {unsigned}

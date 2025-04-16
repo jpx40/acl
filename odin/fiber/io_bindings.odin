@@ -7,9 +7,9 @@ import "core:sys/posix"
 foreign import libfiber "libfiber.a"
 
 socket_t :: distinct i32
-
+socket :: socket_t
 mode_t :: distinct u16
-
+mode :: mode_t
 
 @(default_calling_convention="c")
 foreign libfiber {
@@ -21,7 +21,7 @@ foreign libfiber {
     acl_fiber_close :: proc(fd: socket_t) -> c.int ---
     acl_fiber_accept :: proc(sock: socket_t , addr :^posix.sockaddr, socklen : ^posix.socklen_t ) -> socket_t ---
     acl_fiber_connect :: proc(sock: socket_t , addr: ^posix.sockaddr ,socklen: posix.socklen_t ) -> c.int ---
-    acl_fiber_read :: proc(socket_t,buf: [^]u8,count: c.size_t) -> c.ssize_t ---
+    acl_fiber_read :: proc(sock:socket_t,buf: [^]u8,count: c.size_t) -> c.ssize_t ---
     acl_fiber_readv :: proc(socket: socket_t,iov: ^posix.iovec,iovcnt: c.int) -> c.ssize_t ---
     acl_fiber_recvmsg :: proc(socket: socket_t, msg: ^posix.msghdr, flags:c.int)  -> c.ssize_t---
 
@@ -34,7 +34,7 @@ foreign libfiber {
     
      acl_fiber_recv :: proc(sock: socket_t,buf:[^]u8,  len: c.size_t,  flags: c.int)  -> c.ssize_t ---
       acl_fiber_recvfrom :: proc(sock: socket_t,buf:[^]u8,  len: c.size_t,  flags: c.int,
-	src_addr: ^posix.sockaddr, addrlen: ^posix.socklen_t)  -> c.ssize_t ---
+     	src_addr: ^posix.sockaddr, addrlen: ^posix.socklen_t)  -> c.ssize_t ---
     
     acl_fiber_send :: proc(sock: socket_t,buf:[^]u8,  len: c.size_t,  flags: c.int) -> c.ssize_t ---
      acl_fiber_sendto :: proc(sock: socket_t, buf:[^]u8,  len: c.size_t,  flags: c.int, dest_addr : ^posix.sockaddr,  addrlen: posix.socklen_t)  -> c.ssize_t ---
@@ -61,7 +61,8 @@ acl_fiber_open :: proc(pathname: cstring, #c_vararg flags: ..c.int) -> c.int ---
 	acl_fiber_renameat :: proc(olddirfd: c.int,oldpath:cstring,newdirfd:c.int, newpath:cstring) -> c.int ---
     acl_fiber_rename :: proc(oldpath:cstring, newpath: cstring) -> c.int ---
 	 acl_fiber_mkdirat :: proc(dirfd: c.int, pathname: cstring,  mode: mode_t) -> c.int ---
-	acl_fiber_pread :: proc(fd: c.int, buf: [^]u8,  count: c.size_t,  offset: c.longlong) -> c.ssize_t  ---
+	acl_fiber_pread :: proc(fd: socket, buf: [^]u8,  count: c.size_t,  offset: c.longlong) -> c.ssize_t  ---
 
+	__acl_fiber_write :: proc(fd: socket, buf: [^]u8,  count: c.size_t,  offset: c.longlong) -> c.ssize_t  ---
     
 }

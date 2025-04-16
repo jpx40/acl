@@ -5,6 +5,7 @@ import "core:c"
 import "core:sync"
 import "core:sync/chan"
 import "core:sys/posix"
+import "base:runtime"
 foreign import libfiber "libfiber.a"
 
 Attr :: struct {
@@ -37,6 +38,13 @@ __attr_lock :  sync.Mutex
 odin_func_t :: #type proc "c" (func:FiberFunc,fb: ^Fiber,data: rawptr)
 cleanup_func_t :: #type proc "c" () 
 init_thread_t :: #type proc "c" (func:FiberFunc,data: rawptr)
+
+
+cleanup_thread :: proc "c" () {
+    context = runtime.default_context()
+    
+    free_all(context.temp_allocator)
+}
 @(default_calling_convention="c")
 foreign libfiber { 
     
