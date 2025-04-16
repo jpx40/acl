@@ -243,22 +243,22 @@ _set_blocking2 :: proc(socket: net.Any_Socket, should_block: bool) -> (err: Erro
 }
 
 @private
-_endpoint_to_sockaddr :: proc(ep: Endpoint) -> (sockaddr: posix.sockaddr_storage) {
+_endpoint_to_sockaddr :: proc(ep: net.Endpoint) -> (sockaddr: posix.sockaddr_storage) {
 		switch a in ep.address {
-		case IP4_Address:
-			(^posix.sockaddr_in)(&sockaddr)^ = posix.sockaddr_in {
+		case net.IP4_Address:
+			(^posix.sockaddr_in)(&sockaddr)^ = {
 				sin_port = u16be(ep.port),
 				sin_addr = transmute(posix.in_addr)a,
 				sin_family = .INET,
-				sin_len = size_of(posix.sockaddr_in),
+				 // sin_len = size_of(posix.sockaddr_in),
 			}
 			return
-		case IP6_Address:
+		case net.IP6_Address:
 			(^posix.sockaddr_in6)(&sockaddr)^ = posix.sockaddr_in6 {
 				sin6_port = u16be(ep.port),
 				sin6_addr = transmute(posix.in6_addr)a,
 				sin6_family = .INET6,
-				sin6_len = size_of(posix.sockaddr_in6),
+				// sin6_len = size_of(posix.sockaddr_in6),
 			}
 			return
 		}
