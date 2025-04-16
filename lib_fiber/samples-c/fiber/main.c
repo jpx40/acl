@@ -49,7 +49,7 @@ static void fiber_main(ACL_FIBER *fiber, void *ctx acl_unused)
 				acl_fiber_id(fiber));
 		}
 
-		acl_fiber_yield();
+		acl_fiber_delay(10);
 
 		if (__count++ < 10) {
 			printf("fiber-%d, wakeup errno: %d\r\n",
