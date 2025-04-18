@@ -8,6 +8,8 @@ import "core:sys/linux"
 import "core:net"
 
 import "core:sys/posix"
+
+__Errno :: linux.Errno
 foreign import libfiber "libfiber.a"
 @(default_calling_convention="c")
 foreign libfiber { 

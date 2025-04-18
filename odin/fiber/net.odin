@@ -44,3 +44,6 @@ send_udp :: proc(socket: UDP_Socket, buf: []byte, to: Endpoint) -> (bytes_writte
 }
 
 
+bind ::  proc(skt: net.Any_Socket, ep: net.Endpoint) -> (err: Error) {
+return _bind(skt, ep)
+}
