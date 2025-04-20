@@ -3,10 +3,11 @@ package fiber
 
 
 import "core:os"
-
+import "core:fmt"
 import "base:runtime"
 import "core:strings"
 
+import "core:c"
 
 @(require_results)
 open :: proc(path: string, flags: int = os.O_RDONLY, mode: int = 0o000) -> (os.Handle, os.Error) {
@@ -92,4 +93,34 @@ write_at :: proc(fd: os.Handle, data: []byte, offset: i64) -> (int, os.Error) {
 		return -1, os.Platform_Error(bytes_written)
 	}
 	return bytes_written, nil
+}
+
+rename :: proc(old_path, new_path: string) -> os.Error {
+	runtime.DEFAULT_TEMP_ALLOCATOR_TEMP_GUARD()
+	old_path_cstr := strings.clone_to_cstring(old_path, context.temp_allocator)
+	new_path_cstr := strings.clone_to_cstring(new_path, context.temp_allocator)
+	return os.Platform_Error(acl_fiber_rename(old_path_cstr, new_path_cstr))
+}
+
+remove :: proc(path: string) -> os.Error {
+	runtime.DEFAULT_TEMP_ALLOCATOR_TEMP_GUARD()
+	path_cstr := strings.clone_to_cstring(path, context.temp_allocator)
+	return  os.Platform_Error(acl_fiber_unlink(path_cstr))
+}
+
+
+
+@(require_results)
+poll :: proc(fds: []os.pollfd, timeout: int) -> (int, os.Error) {
+	result := acl_fiber_poll(raw_data(fds), c.uint(len(fds)), i32(timeout))
+	if result < 0 {
+		return 0, os.Platform_Error(result)
+	}
+	return int(result), nil
+}
+close :: proc {
+
+    close_file,
+    close_tcp,
+    close_udp,
 }

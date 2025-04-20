@@ -1,62 +1,65 @@
 package fiber
 
 
+import "core:c/libc"
 import "core:c"
 import "core:sync"
 import "core:sync/chan"
 import "core:sys/posix"
 import "base:runtime"
 foreign import libfiber "libfiber.a"
+fiber_func0 :: #type proc "c" (fb: ^Fiber,data: rawptr)
+fiber_func1 ::#type proc(fb: ^Fiber,data: rawptr)
 
-Attr :: struct {
-    oflag: c.uint,
-    stack_size: c.size_t
+fiber_func2 ::#type proc(fb: ^Fiber)
+
+fiber_func3 ::#type proc(data: rawptr)
+
+fiber_func4 ::#type proc()
+FiberFunc :: struct #raw_union {
+    func0: fiber_func0,
+    func1 : fiber_func1,
+    func2: fiber_func2,
+     func3 : fiber_func3,
+     func4:fiber_func4
 }
 
-Task :: struct {
+
+/**
+ * Start the fiber schedule process with the specified event type, the default
+ * event type is FIBER_EVENT_KERNEL. acl_fiber_schedule using the default
+ * event type. FIBER_EVENT_KERNEL is different for different OS platform:
+ * Linux: epoll; BSD: kqueue; Windows: iocp.
+ * @param event_mode {int} the event type, defined as FIBER_EVENT_XXX
+ */
+ FIBER_EVENT_KERNEL ::	0	/* epoll/kqueue/iocp	*/
+ FIBER_EVENT_POLL :: 	1	/* poll			*/
+ FIBER_EVENT_SELECT ::	2	/* select		*/
+FIBER_EVENT_WMSG ::	3	/* win message		*/
+FIBER_EVENT_IO_URING ::	4	/* io_uring of Linux5.x */
+
+ContextState :: enum {
+    Start,
+    End
 
 }
+ContextTypeNr :: enum (i8) {
+    NONE =0
 
-pthread_t :: distinct u64
-
-pid_t :: distinct i32
-   ThreadCtx :: struct  {
-     thrd : posix.pthread_t,
-     mailer: ^Mailer,
-    id: posix.pid_t,
-    is_detached: u8,
-};
- Mailer :: struct {
-    task_queue: chan.Chan(Task),
-    id: posix.pid_t
-};
-__attr_is_init :bool = false
-__attr : Attr = {}
-__attr_lock :  sync.Mutex
-
-
-odin_func_t :: #type proc "c" (func:FiberFunc,fb: ^Fiber,data: rawptr)
-cleanup_func_t :: #type proc "c" () 
-init_thread_t :: #type proc "c" (func:FiberFunc,data: rawptr)
-
-
-cleanup_thread :: proc "c" () {
-    context = runtime.default_context()
-    
-    free_all(context.temp_allocator)
 }
-@(default_calling_convention="c")
-foreign libfiber { 
-    
- fiber_set_odin_func :: proc( odin_func_t ) ---
-acl_fiber_create4 :: proc(func:FiberFunc, arg: rawptr, size: c.size_t,typ: c.int) -> ^Fiber ---
-acl_fiber_create2 :: proc(attr: ^Attr,func: proc "c" (fb: ^Fiber,data: rawptr), arg: rawptr) -> ^Fiber ---
-acl_fiber_create :: proc(func: proc "c" (fb: ^Fiber,data: rawptr), arg: rawptr, size: c.size_t) -> ^Fiber ---
+// not bigger as an pointer
+ContextType :: struct #raw_union {
 
-acl_fiber_create3 :: proc(func:FiberFunc, arg: rawptr, typ: c.int) -> ^Fiber ---
- fiber_set_error_string :: proc(fb:^Fiber,err: cstring) ---
 
-fiber_create_thread :: proc( mailer: ^Mailer, init_func:  init_thread_t,   cleanup: cleanup_func_t,func: fiber_func1,  data: rawptr, attr :   ^posix.pthread_attr_t, event_mode: c.int , detach: u8, err: ^c.int) -> ThreadCtx ---
-
- fiber_get_func_typ :: proc( fb: ^Fiber) -> c.int ---
+}
+@(private)
+run_odin_func :: proc "c" (func: FiberFunc,fb:^Fiber, data: rawptr) {
+context = runtime.default_context()
+switch fiber_get_func_typ(fb) {
+    case 0: {func.func0(fb,data)}
+    case 1: {func.func1(fb,data)}
+    case 2: {func.func2(fb)}
+    case 3: {func.func3(data)}
+    case 4: {func.func4()}
+    }
 }

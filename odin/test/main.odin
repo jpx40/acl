@@ -1,23 +1,22 @@
 package main
 
+import "../fiber/fiber_sync"
 import "../fiber"
 import "core:c/libc"
-
-
+import "core:fmt"
+import "core:os"
+import "core:slice"
+import "base:runtime"
 main :: proc() {
     attr: fiber.Attr 
-    fiber.acl_fiber_attr_init(&attr)
-    fiber.acl_fiber_create2(&attr,proc "cdecl" (fb: ^fiber.Fiber, data: rawptr) {
-        u :cstring = "fffffffff"
-        for i in 0..<10 {
-       
-        libc.printf("%d\n",10)
-        fiber.yield()
-        }
+    fiber.attr_init(&attr)
 
-    }, &attr)
-    fiber.acl_fiber_create(proc "cdecl" (fb: ^fiber.Fiber, data: rawptr) {
-     
-    }, &attr, 1000000)
+    t ,m := fiber.create_thread( proc(fb:^fiber.Fiber, data: rawptr) {
+ 
+    fiber.yield()
+    })
+    
     fiber.schedule()
+    
+    fiber.join(t)
 }
