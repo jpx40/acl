@@ -8,21 +8,29 @@
 #include <sys/stat.h>
 
 #include <unistd.h>
-static int acl_fiber_open(const char * pathname, int flags, ...) {
+  int acl_fiber_open(const char * pathname, int flags, ...) {
     
     return    open(pathname, flags);
 
 }
 
+int acl_fiber_unlink(const char *pathname) {
+    
+    return unlink(pathname);
+}
+ssize_t __acl_fiber_pwrite(int fd, const void *buf, size_t count, off_t offset) {
+    
+    return pwrite(fd, buf,count,  offset);
+}
 
-static int acl_fiber_openat(int dirfd, const char * pathname, int flags, ...) {
+  int acl_fiber_openat(int dirfd, const char * pathname, int flags, ...) {
     
     return    openat(dirfd,pathname, flags);
 
 }
 
 #ifdef HAS_RENAMEAT2
-static int acl_fiber_renameat2(int olddirfd, const char *oldpath,
+  int acl_fiber_renameat2(int olddirfd, const char *oldpath,
 	int newdirfd, const char *newpath, unsigned int flags) {
 	
 	return renameat2(olddirfd, oldpath,
@@ -35,18 +43,18 @@ static int acl_fiber_renameat2(int olddirfd, const char *oldpath,
 }
 #endif
 
-static int acl_fiber_rename(const char *oldpath, const char *newpath)
+  int acl_fiber_rename(const char *oldpath, const char *newpath)
 {
 	return renameat(AT_FDCWD, oldpath, AT_FDCWD, newpath);
 }
 
 
-static int acl_fiber_mkdirat(int dirfd, const char *pathname, mode_t mode) {
+  int acl_fiber_mkdirat(int dirfd, const char *pathname, mode_t mode) {
     
    return mkdirat(dirfd,pathname, mode);
     
 }
-static ssize_t  acl_fiber_pread(int fd, void *buf, size_t count, off_t offset) {
+  ssize_t  acl_fiber_pread(int fd, void *buf, size_t count, off_t offset) {
     
     return pread(fd, buf,  count,  offset);
 }

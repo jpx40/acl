@@ -72,7 +72,7 @@ int acl_fiber_scheduled(void)
     
     __mailer=mailer;
 }
- Mailer* fiber_get_mailer() {
+ Mailer* acl_fiber_get_mailer() {
     if (__mailer != NULL)
         return __mailer;
     return NULL;
@@ -102,7 +102,7 @@ static void thread_free(void *ctx)
 	if (tf->fibers) {
 		mem_free(tf->fibers);
 	}
-
+fiber_run_cleanup();
 #ifdef	SHARE_STACK
 # ifdef	USE_VALGRIND
 	VALGRIND_STACK_DEREGISTER(tf->vid);

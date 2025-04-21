@@ -47,9 +47,14 @@ struct ACL_FIBER {
 	unsigned       fid;
 	unsigned       slot;
 	long long      when;
-	int            errnum;	// The fiber's current errno.a
 	char           *errstring;
-	int            typ;
+	void*          ctx;
+	int            errnum;	// The fiber's current errno.a
+
+	char            typ;
+	signed char    ctx_typ;
+
+	char           non_blocking;
 	int            signum;	// The signed number to the fiber.
 	unsigned short status;	// The fiber's status as FIBER_STATUS_XXX.
 	unsigned short wstatus;	// The fiber's waiting status as FIBER_WAIT_XXX.
