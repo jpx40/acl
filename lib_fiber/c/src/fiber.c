@@ -20,7 +20,10 @@ typedef int  *(*errno_fn)(void);
 
 static errno_fn __sys_errno     = NULL;
 #endif
+typedef int *(*on_error)(void*);
+static __thread on_error __on_error = NULL;
 
+static  int *(*__on_error_odin)(on_error,void*) = NULL;
 static __thread Mailer*  __mailer=NULL;
 typedef struct THREAD {
 	RING       ready;		/* ready fiber queue */
