@@ -13,7 +13,9 @@ extern int swapcontext(struct ucontext *old_ctx, struct ucontext *new_ctx);
 extern void makecontext(ucontext_t *ucp, void (*func)(), int argc, ...);
 #endif
 */
-
+typedef struct CString { 
+    char* str;
+int len;}CString;
 typedef struct {
 	void  *ctx;
 	void (*free_fn)(void *);
@@ -43,23 +45,25 @@ struct ACL_FIBER {
 	FIBER_BASE    *base;
 	RING           me;
 	RING           me2;
+	CString          errstring;
+	void*          ctx;
 	long           tid;
 	unsigned       fid;
 	unsigned       slot;
 	long long      when;
-	char           *errstring;
-	void*          ctx;
-	int            errnum;	// The fiber's current errno.a
+	
 
 	char            typ;
 	signed char    ctx_typ;
-
 	char           non_blocking;
+	int            errnum;	// The fiber's current errno.a
+
 	int            signum;	// The signed number to the fiber.
 	unsigned short status;	// The fiber's status as FIBER_STATUS_XXX.
 	unsigned short wstatus;	// The fiber's waiting status as FIBER_WAIT_XXX.
 	unsigned int   oflag;	// The flags for creating fiber.
 	unsigned int   flag;	// The flags for the fiber's running status.
+
 #define	FIBER_F_STARTED		(unsigned) (1 << 0)
 #define	FIBER_F_SAVE_ERRNO	(unsigned) (1 << 1)
 #define	FIBER_F_KILLED		(unsigned) (1 << 2)

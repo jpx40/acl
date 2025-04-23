@@ -451,7 +451,9 @@ void acl_fiber_clear(ACL_FIBER *fiber)
 	if (fiber) {
 		fiber->errnum = 0;
 		fiber->flag &= ~FIBER_F_CANCELED;
-		fiber->errstring = "";
+		fiber->errstring.len = 0;
+		fiber->errstring.str = "";
+
 	}
 }
 
@@ -684,6 +686,10 @@ static ACL_FIBER *fiber_alloc(void (*fn)(ACL_FIBER *, void *),
 	fiber->flag    = 0;
 	fiber->status  = FIBER_STATUS_NONE;
 	fiber->wstatus = FIBER_WAIT_NONE;
+	fiber->errstring.len = 0;
+	fiber->errstring.str = "";
+	fiber->non_blocking = 1;
+	fiber->typ = 0;
 
 #ifdef	DEBUG_READY
 	fiber->ctag[0]  = 0;
@@ -745,8 +751,7 @@ ACL_FIBER *acl_fiber_create2(const ACL_FIBER_ATTR *attr,
 	void (*fn)(ACL_FIBER *, void *), void *arg)
 {
 	ACL_FIBER *fiber = fiber_alloc(fn, arg, attr);
-	fiber->errstring = "";
-	fiber->typ = 0;
+
 	if (__thread_fiber->slot >= __thread_fiber->size) {
 		__thread_fiber->size  += 128;
 		__thread_fiber->fibers = (ACL_FIBER **) mem_realloc(

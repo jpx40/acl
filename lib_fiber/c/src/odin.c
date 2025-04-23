@@ -23,6 +23,23 @@ typedef struct Option_t {}  Option_t;
 }
 
 
+
+typedef struct CError {
+    CString str;
+   int code;
+}CError;
+
+
+CError acl_fiber_get_cerror(ACL_FIBER* fb) {
+    CError err;
+    err.code =fb->errnum;
+    err.str = fb->errstring;
+    return err;
+}
+
+char acl_fiber_has_error(ACL_FIBER* fb) {    
+    return fb->errnum != 0;
+}
 void acl_fiber_set_context(ACL_FIBER* fb,void* ctx,signed char type) {
     fb->ctx =ctx;
     fb->ctx_typ=type;    
@@ -82,11 +99,11 @@ fb->ctx_typ = ctx_typ;
 		fb->ctx_typ = ctx_typ;
 	return fb;
 	}
-  void fiber_set_error_string(ACL_FIBER* fb,char * err) {
+  void fiber_set_error_string(ACL_FIBER* fb,CString err) {
     fb->errstring = err;
     
 }
-  char *fiber_get_error_string(ACL_FIBER* fb) {
+  CString fiber_get_error_string(ACL_FIBER* fb) {
     return fb->errstring;    
 }
 

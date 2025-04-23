@@ -27,7 +27,7 @@ Waiter :: struct($T: typeid) {
 using node: list.Node,
 // Atomic
 finished : bool,
-enqueue : Result(T,fiber.Error)
+enqueue :proc(Result(T,fiber.Error)) 
 
 }
 
@@ -44,9 +44,9 @@ get_waiter :: proc(node: ^list.Node, $T: typeid) -> ^Waiter(T) {
 	return (^Waiter(T))(uintptr(node) - offset)
 }
 
-add_waiter :: proc(wl:  ^WaiterList, n: $T ) -> ^Waiter(T) {
+add_waiter :: proc(wl:  ^WaiterList, $T: typeid ) -> ^Waiter(T) {
    w ,_  := new(Waiter(T),mem.dynamic_arena_allocator(&wl.arena))
-   
+   list.push_back(wl,w.node)
 return w
 
 }
@@ -55,4 +55,72 @@ add_waiter_clone :: proc(wl:  ^WaiterList, n: Waiter($T) ) -> ^Waiter(T) {
    
 return w
 
+}
+
+wake ::proc(waiter: ^Waiter($T),data: T) -> bool {
+    if sync.atomic_compare_exchange_strong(&waiter.finished,false,true) {
+       waiter.enqueue(Ok(T) {data} )
+       return true
+    }
+    return false
+    
+}
+
+wake_all :: proc(wl: ^WaiterList,data: $T)  {
+    iter := list.iterator_head(wl.waiters,Waiter(T), "node")
+    
+    for w in list.iterate_next(&iter) {
+        wake(w,data)
+    }
+
+}
+
+WaiterError ::  enum {
+ Empty,
+ Ok
+}
+wake_one :: proc(wl: ^WaiterList,data: $T) -> WaiterError {
+    for {
+        if list.is_empty(wl.waiters) {
+            return .Empty
+        }
+        n:= list.pop_front(wl.waiters)       
+        w :=get_waiter(n,T)
+       if !wake(w,data) {
+            list.push_back(wl.waiters,w.node)
+            continue
+       } else {
+       
+       return .Ok
+       }
+    }
+    return .Empty
+
+}
+ 
+await_internal :: proc(mu: ^Mutex,wl :^WaiterList , $T:typeid, ctx: rawptr, enqueue:proc(res: Result(T,fiber.Error) )) {
+
+    resolved_waiter: ^Waiter(T)
+    finished: bool
+    resolved_waiter.finished = false
+    resolved_waiter.enqueue = enqueue
+    if mutex != nil  {
+    
+     add_waiter_clone(resolved_waiter)
+     mutex_unlock(mu)
+    } else {
+    add_waiter_clone(resolved_waiter)
+ 
+}
+WaiterCtx :: struct($T: typeid) {
+mu: ^Mutex,
+wl: ^WaiterList,
+func: proc(res: Result(T,fiber.Error))
+}
+await ::proc(ctx :^WaiterCtx($T)) {
+
+fiber.create(proc(fb:fiber.Fiber, data: rawptr) {
+
+    
+},ctx);
 }
