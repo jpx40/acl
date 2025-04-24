@@ -15,7 +15,8 @@ extern void makecontext(ucontext_t *ucp, void (*func)(), int argc, ...);
 */
 typedef struct CString { 
     char* str;
-int len;}CString;
+    int len;
+}CString;
 typedef struct {
 	void  *ctx;
 	void (*free_fn)(void *);

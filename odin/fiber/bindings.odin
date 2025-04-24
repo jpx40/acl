@@ -23,7 +23,11 @@ FiberSignal :: bit_set[FiberSignal_Bits; i32]
 }
 @(default_calling_convention = "c")
 foreign libfiber {
+@(link_name = "acl_fiber_has_error")
+fiber_has_error:: proc(fb: ^Fiber) -> b8 ---
+acl_fiber_set_cerror :: proc(fb: ^Fiber, err: CError) ---
 
+acl_fiber_get_cerror :: proc(fb: ^Fiber) -> ( err: CError) ---
 
 	@(link_name = "acl_fiber_attr_init")
 	attr_init :: proc(attr: ^Attr) ---

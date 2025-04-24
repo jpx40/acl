@@ -13,8 +13,9 @@ Error :: union {
 }
 
 CustomError :: struct {
-    nr: int,
-    text: string
+  text: string,
+    code: int,
+  
 }
 
 nr_to_errno :: proc(nr:int) -> Errno {

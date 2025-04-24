@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -29,11 +30,26 @@ typedef struct CError {
    int code;
 }CError;
 
+void acl_fiber_set_cerror(ACL_FIBER* fb,CError err) {
+    fb->errnum = err.code;
+    fb->errstring = err.str;
+    
+}
 
+CString cstr_from_ptr(const char* s) {
+    CString str;
+    str.str = (char*)s;
+    str.len = (int)strlen(s);   
+}
+int acl_fiber_is_cstring_valid_str(CString str)  {
+    return str.str[str.len] == '\0';
+}
 CError acl_fiber_get_cerror(ACL_FIBER* fb) {
     CError err;
     err.code =fb->errnum;
     err.str = fb->errstring;
+    
+    
     return err;
 }
 
