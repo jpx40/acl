@@ -10,7 +10,7 @@ import "core:sys/posix"
 foreign import libfiber "libfiber.a"
 
 @(private)
-__Errno :: posix.errno
+__Errno ::  posix.Errno
 @(private)
 _dial_tcp_from_endpoint :: proc(endpoint: net.Endpoint, options := net.default_tcp_options) -> (skt: net.TCP_Socket, err: Error) {
 	if endpoint.port == 0 {
