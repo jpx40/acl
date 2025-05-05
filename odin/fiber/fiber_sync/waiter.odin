@@ -119,8 +119,11 @@ func: proc(res: Result(T,fiber.Error))
 }
 await ::proc(ctx :^WaiterCtx($T)) {
 
-fiber.create(proc(fb:fiber.Fiber, data: rawptr) {
+fb := fiber.create(proc(fb:fiber.Fiber, data: rawptr) {
 
     
-},ctx);
+},ctx)
+
+
+return
 }
