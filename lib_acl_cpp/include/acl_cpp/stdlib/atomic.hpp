@@ -100,77 +100,77 @@ public:
 private:
 	long long n_;
 };
+}
+// #include "thread.hpp"
 
-#include "thread.hpp"
+// class atomic_long_test {
+// private:
+// 	atomic_long count_;
+// public:
+// 	atomic_long_test() {}
+// 	~atomic_long_test() {}
 
-class atomic_long_test {
-private:
-	atomic_long count_;
-public:
-	atomic_long_test() {}
-	~atomic_long_test() {}
-
-	void run() {
+// 	void run() {
 		
-		long long n = count_++;
-		printf(">>n=%lld\r\n", n);
+// 		long long n = count_++;
+// 		printf(">>n=%lld\r\n", n);
 
-		n = count_;
-		printf(">>n=%lld\r\n", n);
+// 		n = count_;
+// 		printf(">>n=%lld\r\n", n);
 
-		n = ++count_;
-		printf(">>n=%lld\r\n", n);
+// 		n = ++count_;
+// 		printf(">>n=%lld\r\n", n);
 
-		n = --count_;
-		printf(">>n=%lld\r\n", n);
+// 		n = --count_;
+// 		printf(">>n=%lld\r\n", n);
 
-		n = count_--;
-		printf(">>n=%lld\r\n", n);
+// 		n = count_--;
+// 		printf(">>n=%lld\r\n", n);
 
-		n = count_;
-		printf(">>n=%lld\r\n", n);
+// 		n = count_;
+// 		printf(">>n=%lld\r\n", n);
 
-		count_ -= 1;
-		n = count_;
-		printf(">>n=%lld\r\n", n);
+// 		count_ -= 1;
+// 		n = count_;
+// 		printf(">>n=%lld\r\n", n);
 
-		printf(">>count > 1 ? %s\r\n", count_ >= 1 ? "yes" : "no");
-		printf(">>1 > count ? %s\r\n", 1 > count_ ? "yes" : "no");
+// 		printf(">>count > 1 ? %s\r\n", count_ >= 1 ? "yes" : "no");
+// 		printf(">>1 > count ? %s\r\n", 1 > count_ ? "yes" : "no");
 
-		int i = 1;
-		count_ = i;
-		n = count_;
-		printf(">>n=%lld\r\n", n);
-	}
+// 		int i = 1;
+// 		count_ = i;
+// 		n = count_;
+// 		printf(">>n=%lld\r\n", n);
+// 	}
 
-	class mythread : public thread {
-	public:
-		mythread(atomic_long_test& at) : at_(at) {}
-		~mythread() {}
-	protected:
-		void* run()
-		{
-			for (size_t i = 0; i < 100; i++)
-				at_.run();
-			return NULL;
-		}
-	private:
-		atomic_long_test& at_;
-	};
+// 	class mythread : public thread {
+// 	public:
+// 		mythread(atomic_long_test& at) : at_(at) {}
+// 		~mythread() {}
+// 	protected:
+// 		void* run()
+// 		{
+// 			for (size_t i = 0; i < 100; i++)
+// 				at_.run();
+// 			return NULL;
+// 		}
+// 	private:
+// 		atomic_long_test& at_;
+// 	};
 
-	static void test() {
-		atomic_long_test at;
-		mythread thr1(at), thr2(at), thr3(at);
-		thr1.set_detachable(false);
-		thr2.set_detachable(false);
-		thr3.set_detachable(false);
-		thr1.start();
-		thr2.start();
-		thr3.start();
-		thr1.wait();
-		thr2.wait();
-		thr3.wait();
-	}
-};
+// 	static void test() {
+// 		atomic_long_test at;
+// 		mythread thr1(at), thr2(at), thr3(at);
+// 		thr1.set_detachable(false);
+// 		thr2.set_detachable(false);
+// 		thr3.set_detachable(false);
+// 		thr1.start();
+// 		thr2.start();
+// 		thr3.start();
+// 		thr1.wait();
+// 		thr2.wait();
+// 		thr3.wait();
+// 	}
+// };
 
-} // namespace acl
+// } // namespace acl

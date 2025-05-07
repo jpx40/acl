@@ -98,7 +98,7 @@ wake_one :: proc(wl: ^WaiterList,data: $T) -> WaiterError {
 
 }
  
-await_internal :: proc(mu: ^Mutex,wl :^WaiterList , $T:typeid, ctx: rawptr, enqueue:proc(res: Result(T,fiber.Error) )) {
+await_internal :: proc(mu: ^Mutex,wl :^WaiterList , ctx: rawptr, enqueue:proc(res: Result($T,fiber.Error) )) {
 
     resolved_waiter: ^Waiter(T)
     finished: bool
@@ -112,18 +112,18 @@ await_internal :: proc(mu: ^Mutex,wl :^WaiterList , $T:typeid, ctx: rawptr, enqu
     add_waiter_clone(resolved_waiter)
  
 }
-WaiterCtx :: struct($T: typeid) {
+WaiterCtx :: struct {
 mu: ^Mutex,
 wl: ^WaiterList,
-func: proc(res: Result(T,fiber.Error))
+func: proc(res: Result(rawptr,fiber.Error))
 }
 await ::proc(ctx :^WaiterCtx($T)) {
 
 fb := fiber.create(proc(fb:fiber.Fiber, data: rawptr) {
-
+ctx := cast(^WaiterCtx)data
+await_internal(ctx.mu,ctx.wl,ctx.func)
     
 },ctx)
 
 
-return
 }
